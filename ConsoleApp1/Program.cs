@@ -5,6 +5,7 @@ using KevinSpacey;
 using KevinSpacey.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace ConsoleApp1
 
             var config = startUp.services.GetRequiredService<IConfiguration>();
             var client = startUp.services.GetRequiredService<DiscordSocketClient>();
+            var logger = startUp.services.GetRequiredService<ILogger>();
+            logger.Information("Kevin has started up");
             client.Log += LogAsync;
 
             startUp.services.GetRequiredService<CommandService>().Log += LogAsync;

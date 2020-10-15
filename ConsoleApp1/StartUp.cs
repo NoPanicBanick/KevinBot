@@ -7,9 +7,8 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KevinSpacey
 {
@@ -47,7 +46,16 @@ namespace KevinSpacey
             // Add service provider for discord commands
             var servs = services.BuildServiceProvider();
             services.AddSingleton<IServiceProvider>(servs);
+            services = ConfigureLogger(services, config);
             this.services = services.BuildServiceProvider();
+        }
+
+        private IServiceCollection ConfigureLogger(IServiceCollection services, IConfiguration config)
+        {
+            var logger = new LoggerConfiguration()
+                .WriteTo.ApplicationInsights(config["APPINSIGHTS_INSTRUMENTATIONKEY"], TelemetryConverter.Events)
+                .WriteTo.Console().CreateLogger();
+            return services.AddSingleton<ILogger>(logger);
         }
     }
 }
