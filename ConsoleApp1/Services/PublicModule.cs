@@ -13,7 +13,7 @@ namespace KevinSpacey.Services
             => ReplyAsync("My Heart is Stilling Beating!");
 
 
-        [Command("play", RunMode = RunMode.Async)]
+        [Command("play", true, RunMode = RunMode.Async)]
         [Alias("stop", "skip")]
         public async Task CleanUpBotCommands()
         {
