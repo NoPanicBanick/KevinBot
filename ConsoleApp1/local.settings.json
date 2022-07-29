@@ -1,4 +1,4 @@
 {
-  "keyvaulturl": "https://prod-central-kv.vault.azure.net",
+  "keyvaulturl": "https://luigi.vault.azure.net/",
   "APPINSIGHTS_INSTRUMENTATIONKEY": "a1f69543-844f-458a-a5cb-d7d5792773b6"
 }
