@@ -22,7 +22,7 @@ namespace KevinSpacey
 
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("C:\\Users\\ryley\\source\\repos\\KevinSpacey\\ConsoleApp1\\local.settings.json")
+                .AddJsonFile("local.settings.json")
                 .AddEnvironmentVariables();
             var configReader = configBuilder.Build();
 
@@ -32,16 +32,21 @@ namespace KevinSpacey
                 Vault = configReader["keyvaulturl"], 
                 Manager = new DefaultKeyVaultSecretManager()
             });
-
             ConfigureServices(serviceBuilder, config.Build());
         }
 
         private void ConfigureServices(IServiceCollection services, IConfiguration config)
         {
+            var discordSocketConfig = new DiscordSocketConfig()
+            {
+                GatewayIntents = GatewayIntents.AllUnprivileged
+            };
+
             services.AddSingleton(config);
-            services.AddSingleton<DiscordSocketClient>();
+            services.AddSingleton(new DiscordSocketClient(discordSocketConfig));
             services.AddSingleton<CommandService>();
             services.AddSingleton<CommandHandlingService>();
+            services.AddMemoryCache();
 
             // Add service provider for discord commands
             var servs = services.BuildServiceProvider();
