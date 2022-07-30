@@ -1,8 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using KevinSpacey;
-using KevinSpacey.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -10,7 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace Rocket.LoudSpeaker
 {
     public class Program
     {

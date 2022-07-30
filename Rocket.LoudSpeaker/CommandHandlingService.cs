@@ -5,40 +5,47 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace KevinSpacey.Services
+namespace Rocket.LoudSpeaker
 {
     public class CommandHandlingService
     {
-        private readonly CommandService commandService;
-        private readonly DiscordSocketClient discordClient;
-        private readonly IServiceProvider serviceProvider;
+        private readonly CommandService _commandService;
+        private readonly DiscordSocketClient _discordClient;
+        private readonly IServiceProvider _serviceProvider;
 
         public CommandHandlingService(CommandService commandService, DiscordSocketClient discordClient, IServiceProvider serviceProvider)
         {
-            this.commandService = commandService;
-            this.discordClient = discordClient;
-            this.serviceProvider = serviceProvider;
-            this.commandService.CommandExecuted += CommandExecutedAsync;
-            this.discordClient.MessageReceived += MessageReceivedAsync;
+            _commandService = commandService;
+            _discordClient = discordClient;
+            _serviceProvider = serviceProvider;
+            _commandService.CommandExecuted += CommandExecutedAsync;
+            _discordClient.MessageReceived += MessageReceivedAsync;
         }
 
         public async Task InitializeAsync()
         {
             // Register modules that are public and inherit ModuleBase<T>.
-            await commandService.AddModulesAsync(Assembly.GetEntryAssembly(), serviceProvider);
+            await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
         }
 
+        /// <summary>
+        /// Executes when a message is posted with the prefix
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            // command is unspecified when there was a search failure (command not found); we don't care about these errors
+            // Prefix was used but no command exists
             if (!command.IsSpecified)
                 return;
 
-            // the command was successful, we don't care about this result, unless we want to log that a command succeeded.
+            // Successful path
             if (result.IsSuccess)
                 return;
 
-            // the command failed, let's notify the user that something happened.
+            // Boo Sad Path
             await context.Channel.SendMessageAsync($"error: {result}");
         }
 
@@ -55,11 +62,11 @@ namespace KevinSpacey.Services
             // for a more traditional command format like !help.
             //if (!message.HasMentionPrefix(discordClient.CurrentUser, ref argPos)) return;
 
-            var context = new SocketCommandContext(discordClient, message);
+            var context = new SocketCommandContext(_discordClient, message);
             // Perform the execution of the command. In this method,
             // the command service will perform precondition and parsing check
             // then execute the command if one is matched.
-            await commandService.ExecuteAsync(context, argPos, serviceProvider);
+            await _commandService.ExecuteAsync(context, argPos, _serviceProvider);
             // Note that normally a result will be returned by this format, but here
             // we will handle the result in CommandExecutedAsync,
         }

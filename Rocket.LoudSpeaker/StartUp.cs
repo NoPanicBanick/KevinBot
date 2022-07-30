@@ -1,16 +1,16 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using KevinSpacey.Services;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.DependencyInjection;
+using Rocket.LoudSpeaker.Services;
 using Serilog;
 using System;
 
-namespace KevinSpacey
+namespace Rocket.LoudSpeaker
 {
     //[StartUp]
     public class StartUp
@@ -29,7 +29,7 @@ namespace KevinSpacey
             var config = configBuilder.AddAzureKeyVault(new AzureKeyVaultConfigurationOptions()
             {
                 Client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)),
-                Vault = configReader["keyvaulturl"], 
+                Vault = configReader["keyvaulturl"],
                 Manager = new DefaultKeyVaultSecretManager()
             });
             ConfigureServices(serviceBuilder, config.Build());
@@ -46,6 +46,7 @@ namespace KevinSpacey
             services.AddSingleton(new DiscordSocketClient(discordSocketConfig));
             services.AddSingleton<CommandService>();
             services.AddSingleton<CommandHandlingService>();
+            services.AddScoped<IAudioService, FFMPEGAudioService>();
             services.AddMemoryCache();
 
             // Add service provider for discord commands
